@@ -37,7 +37,7 @@ void ADFCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 		}
 	}
 }
-
+/*
 void ADFCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime)
 {
 	if (BlueprintUpdateCamera(OutVT.Target, OutVT.POV.Location, OutVT.POV.Rotation, OutVT.POV.FOV))
@@ -65,4 +65,4 @@ void ADFCameraManager::UpdateCameraLocation(const float DeltaTime, FMinimalViewI
 		// wait for him to spawn would be more correct
 		DarkFortCharacter->GetActorEyesViewPoint(OutCameraView.Location, OutCameraView.Rotation);
     }
-}
+}'*/

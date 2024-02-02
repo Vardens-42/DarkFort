@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "DarkFortCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Net/UnrealNetwork.h"
 #include "DfCharacterMovementComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -58,7 +57,7 @@ class DARKFORT_API UDfCharacterMovementComponent : public UCharacterMovementComp
 	};
 
 	//Parameters
-	UPROPERTY(EditDefaultsOnly) float MaxSprintSpeed = 750.f;
+	UPROPERTY(EditDefaultsOnly) float MaxSprintSpeed = 630.f;
 	UPROPERTY(EditDefaultsOnly) float MaxJogSpeed = 422.f;
 
 	//Required speed to slide or maintain slide
@@ -141,4 +140,8 @@ public:
 
 	UFUNCTION(BlueprintPure) bool IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const;
 	UFUNCTION(BlueprintPure) bool IsMovementMode(EMovementMode InMovementMode) const;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Sprinting") bool bIsSprinting;
+
+public:
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 };

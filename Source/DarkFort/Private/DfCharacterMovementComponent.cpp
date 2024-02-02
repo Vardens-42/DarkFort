@@ -146,7 +146,10 @@ bool UDfCharacterMovementComponent::CanCrouchInCurrentState() const
 
 float UDfCharacterMovementComponent::GetMaxSpeed() const
 {
-	if (IsMovementMode(MOVE_Walking) && Safe_bWantsToSprint && !IsCrouching()) return MaxSprintSpeed;
+	if (IsMovementMode(MOVE_Walking) && Safe_bWantsToSprint && !IsCrouching())
+    {
+        if(bIsSprinting) return MaxSprintSpeed;
+    }
 
 	if (MovementMode != MOVE_Custom) return Super::GetMaxSpeed();
 
@@ -178,6 +181,19 @@ float UDfCharacterMovementComponent::GetMaxBrakingDeceleration() const
 }
 void UDfCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
 {
+	//Sprinting - For the actual sprinting functionality, see GetMaxSpeed()
+    if (CharacterOwner->GetLocalRole() != ROLE_SimulatedProxy)
+    {
+        if (IsMovementMode(MOVE_Walking) && Safe_bWantsToSprint && !IsCrouching())
+        {
+            bIsSprinting = true;
+        }
+        else
+        {
+            bIsSprinting = false;
+        }
+    }
+
 	//Slide
 	if (MovementMode == MOVE_Walking && !bWantsToCrouch && Safe_bPrevWantsToCrouch)
 	{
@@ -213,6 +229,7 @@ void UDfCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float Del
 UDfCharacterMovementComponent::UDfCharacterMovementComponent()
 {
 	NavAgentProps.bCanCrouch = true;
+	SetIsReplicated(true);
 }
 
 void UDfCharacterMovementComponent::InitializeComponent()
@@ -708,6 +725,12 @@ bool UDfCharacterMovementComponent::IsCustomMovementMode(ECustomMovementMode InC
 bool UDfCharacterMovementComponent::IsMovementMode(EMovementMode InMovementMode) const
 {
 	return InMovementMode == MovementMode;
+}
+
+void UDfCharacterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{ 
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
+	DOREPLIFETIME(UDfCharacterMovementComponent, bIsSprinting);
 }
 
 #pragma endregion
