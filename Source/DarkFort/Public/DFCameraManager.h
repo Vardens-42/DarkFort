@@ -17,6 +17,6 @@ public:
 	ADFCameraManager();
 
 	virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime) override;
-//	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;
-//	virtual void UpdateCameraLocation(float DeltaTime, FMinimalViewInfo& OutCameraView);
+	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;
+	virtual void UpdateCameraLocation(float DeltaTime, FMinimalViewInfo& OutCameraView);
 };

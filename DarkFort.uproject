@@ -30,11 +30,11 @@
 			]
 		},
 		{
-			"Name": "AnimationLocomotionLibrary",
+			"Name": "AnimationWarping",
 			"Enabled": true
 		},
 		{
-			"Name": "AnimationWarping",
+			"Name": "AnimationLocomotionLibrary",
 			"Enabled": true
 		}
 	]

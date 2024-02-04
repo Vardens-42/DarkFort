@@ -38,12 +38,12 @@ ADarkFortCharacter::ADarkFortCharacter(const FObjectInitializer& ObjectInitializ
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	//GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = 422.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 10000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-	
+	/*
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -58,11 +58,13 @@ ADarkFortCharacter::ADarkFortCharacter(const FObjectInitializer& ObjectInitializ
 	CameraBoom->CameraRotationLagSpeed = 4.f;
 	CameraBoom->CameraLagMaxTimeStep = 1.f;*/
 
+	/*
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	
+	*/
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -118,13 +120,26 @@ void ADarkFortCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void ADarkFortCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
+	if (Controller)
 	{
+		// input is a Vector2D
+		const FVector2D MovementVector = Value.Get<FVector2D>();
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+
+		if (MovementVector.X != 0.0f)
+		{
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+			AddMovementInput(MovementDirection, MovementVector.X);
+		}
+
+		if (MovementVector.Y != 0.0f)
+		{
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+			AddMovementInput(MovementDirection, MovementVector.Y);
+		}
+	}
+		/*
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
@@ -136,7 +151,7 @@ void ADarkFortCharacter::Move(const FInputActionValue& Value)
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
-	}
+		*/
 }
 
 void ADarkFortCharacter::Look(const FInputActionValue& Value)
@@ -144,11 +159,17 @@ void ADarkFortCharacter::Look(const FInputActionValue& Value)
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
+	if (Controller)
 	{
 		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		if (LookAxisVector.X != 0.0f)
+		{
+			AddControllerYawInput(LookAxisVector.X);
+		}
+		if (LookAxisVector.Y != 0.0f)
+		{
+			AddControllerPitchInput(LookAxisVector.Y);
+		}
 	}
 }
 

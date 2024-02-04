@@ -229,7 +229,7 @@ void UDfCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float Del
 UDfCharacterMovementComponent::UDfCharacterMovementComponent()
 {
 	NavAgentProps.bCanCrouch = true;
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 void UDfCharacterMovementComponent::InitializeComponent()
