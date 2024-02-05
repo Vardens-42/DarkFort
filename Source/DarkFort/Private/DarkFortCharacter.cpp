@@ -185,6 +185,19 @@ FCollisionQueryParams ADarkFortCharacter::GetIgnoreCharacterParams() const
 	return Params;
 }
 
+void ADarkFortCharacter::Jump()
+{
+	Super::Jump();
+	bPressedDarkFortJump = true;
+	//bPressedJump = false;
+}
+
+void ADarkFortCharacter::StopJumping()
+{
+	Super::StopJumping();
+	bPressedDarkFortJump = false;
+}
+
 void ADarkFortCharacter::StartSprint()
 {
 	DfCharacterMovementComponent->SprintPressed();

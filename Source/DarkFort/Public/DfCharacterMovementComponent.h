@@ -32,6 +32,7 @@ class DARKFORT_API UDfCharacterMovementComponent : public UCharacterMovementComp
 
 		// Flags
 		uint8 Saved_bWantsToSprint : 1;
+		uint8 Saved_bPressedDarkFortJump : 1;
 
 		//Other Variables
 		uint8 Saved_bPrevWantsToCrouch : 1;

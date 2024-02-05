@@ -59,11 +59,17 @@ protected:
 	UInputAction* WalkAction;
 
 public:
+	bool bPressedDarkFortJump;
+
+public:
 	ADarkFortCharacter(const FObjectInitializer& ObjectInitializer);
 	
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
 	
 protected:
+
+	virtual void Jump() override;
+	virtual void StopJumping() override;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);

@@ -11,6 +11,7 @@ UDfCharacterMovementComponent::FSavedMove_Df::FSavedMove_Df()
 	Saved_bWantsToSprint=0;
 	Saved_bWantsToProne=0;
 	Saved_bPrevWantsToCrouch=0;
+	Saved_bPressedDarkFortJump = 0;
 }
 
 bool UDfCharacterMovementComponent::FSavedMove_Df::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* InCharacter, float MaxDelta) const
@@ -37,6 +38,7 @@ uint8 UDfCharacterMovementComponent::FSavedMove_Df::GetCompressedFlags() const
 	uint8 Result = FSavedMove_Character::GetCompressedFlags();
 
 	if (Saved_bWantsToSprint) Result |= FLAG_Sprint;
+	if (Saved_bPressedDarkFortJump) Result |= FLAG_JumpPressed;
 	return Result;
 }
 
@@ -49,6 +51,8 @@ void UDfCharacterMovementComponent::FSavedMove_Df::SetMoveFor(ACharacter* C, flo
 	Saved_bWantsToSprint = CharacterMovement->Safe_bWantsToSprint;
 	Saved_bPrevWantsToCrouch = CharacterMovement->Safe_bPrevWantsToCrouch;
 	Saved_bWantsToProne = CharacterMovement->Safe_bWantsToProne;
+
+	Saved_bPressedDarkFortJump = CharacterMovement->DarkFortCharacterOwner->bPressedDarkFortJump;
 }
 
 void UDfCharacterMovementComponent::FSavedMove_Df::PrepMoveFor(ACharacter* C)
@@ -60,6 +64,7 @@ void UDfCharacterMovementComponent::FSavedMove_Df::PrepMoveFor(ACharacter* C)
 	CharacterMovement->Safe_bWantsToSprint = Saved_bWantsToSprint;
 	CharacterMovement->Safe_bPrevWantsToCrouch = Saved_bPrevWantsToCrouch;
 	CharacterMovement->Safe_bWantsToProne = Saved_bWantsToProne;
+	CharacterMovement->DarkFortCharacterOwner->bPressedDarkFortJump = Saved_bPressedDarkFortJump;
 }
 #pragma endregion
 
@@ -223,6 +228,13 @@ void UDfCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float Del
 		SetMovementMode(MOVE_Walking);
 	}
 
+	/*Jump - TODO: Cool things while jumping like vaulting or mantling. For now, we just have our own custom jump that just calls the normal jump.
+	if (DarkFortCharacterOwner->bPressedDarkFortJump)
+	{
+		DarkFortCharacterOwner->bPressedDarkFortJump = false;
+		CharacterOwner->bPressedJump;
+		CharacterOwner->CheckJumpInput(DeltaSeconds);
+	}*/
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
 }
 
