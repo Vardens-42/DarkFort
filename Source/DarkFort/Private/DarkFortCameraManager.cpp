@@ -1,22 +1,22 @@
-#include "DFCameraManager.h"
+#include "DarkFortCameraManager.h"
 #include "DarkFortCharacter.h"
-#include "DfPlayerController.h"
-#include "DfCharacterMovementComponent.h"
+#include "DarkFortPlayerController.h"
+#include "DarkFortCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
-ADFCameraManager::ADFCameraManager()
+ADarkFortCameraManager::ADarkFortCameraManager()
 {
 
 }
 
-void ADFCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
+void ADarkFortCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
 	Super::UpdateViewTarget(OutVT, DeltaTime);
 
 	if (ADarkFortCharacter* DarkFortCharacter = Cast<ADarkFortCharacter>(GetOwningPlayerController()->GetPawn()))
 	{
-		UDfCharacterMovementComponent* DFMC = DarkFortCharacter->GetDfCharacterMovement();
+		UDarkFortCharacterMovementComponent* DFMC = DarkFortCharacter->GetDarkFortCharacterMovement();
 		FVector TargetCrouchOffset = FVector(0, 0, DFMC->GetCrouchedHalfHeight() - DarkFortCharacter->GetClass()->GetDefaultObject<ACharacter>()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 
 		FVector Offset = FMath::Lerp(FVector::ZeroVector, TargetCrouchOffset, FMath::Clamp(CrouchBlendTime / CrouchBlendDuration, 0.f, 1.f));
@@ -38,7 +38,7 @@ void ADFCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 	}
 }
 
-void ADFCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime)
+void ADarkFortCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime)
 {
 	if (BlueprintUpdateCamera(OutVT.Target, OutVT.POV.Location, OutVT.POV.Rotation, OutVT.POV.FOV))
     {
@@ -48,11 +48,11 @@ void ADFCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, float Delta
     UpdateCameraLocation(DeltaTime, OutVT.POV);
 }
 
-void ADFCameraManager::UpdateCameraLocation(const float DeltaTime, FMinimalViewInfo& OutCameraView)
+void ADarkFortCameraManager::UpdateCameraLocation(const float DeltaTime, FMinimalViewInfo& OutCameraView)
 {
     // TODO: track multiple players, predict movement direction, maybe track enemies, etc.
-	ADfPlayerController* DfPlayerController = Cast<ADfPlayerController>(GetOwningPlayerController());
-    if (ADarkFortCharacter* DarkFortCharacter = Cast<ADarkFortCharacter>(DfPlayerController->GetPawn()))
+	ADarkFortPlayerController* DarkFortPlayerController = Cast<ADarkFortPlayerController>(GetOwningPlayerController());
+    if (ADarkFortCharacter* DarkFortCharacter = Cast<ADarkFortCharacter>(DarkFortPlayerController->GetPawn()))
 	{	
         // CameraRotation and CameraDistance are two variables that can be edited to adjust the camera viewpoint
         OutCameraView.Location = DarkFortCharacter->GetActorLocation() + (GetOwningPlayerController()->GetControlRotation().Vector() * -210);

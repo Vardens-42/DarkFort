@@ -2,7 +2,7 @@
 
 #include "DarkFortCharacter.h"
 
-#include "DfCharacterMovementComponent.h"
+#include "DarkFortCharacterMovementComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -18,10 +18,10 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 //////////////////////////////////////////////////////////////////////////
 // ADarkFortCharacter
 
-ADarkFortCharacter::ADarkFortCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UDfCharacterMovementComponent>(CharacterMovementComponentName))
+ADarkFortCharacter::ADarkFortCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UDarkFortCharacterMovementComponent>(CharacterMovementComponentName))
 {
 
-	DfCharacterMovementComponent = Cast<UDfCharacterMovementComponent>(GetCharacterMovement());
+	DarkFortCharacterMovementComponent = Cast<UDarkFortCharacterMovementComponent>(GetCharacterMovement());
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -200,15 +200,15 @@ void ADarkFortCharacter::StopJumping()
 
 void ADarkFortCharacter::StartSprint()
 {
-	DfCharacterMovementComponent->SprintPressed();
+	DarkFortCharacterMovementComponent->SprintPressed();
 }
 
 void ADarkFortCharacter::StopSprinting()
 {
-	DfCharacterMovementComponent->SprintReleased();
+	DarkFortCharacterMovementComponent->SprintReleased();
 }
 
 void ADarkFortCharacter::ToggleCrouch()
 {
-	DfCharacterMovementComponent->CrouchPressed();
+	DarkFortCharacterMovementComponent->CrouchPressed();
 }

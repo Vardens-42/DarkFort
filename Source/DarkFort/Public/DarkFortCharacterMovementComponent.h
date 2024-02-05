@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "DarkFortCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "DfCharacterMovementComponent.generated.h"
+#include "DarkFortCharacterMovementComponent.generated.h"
 
 UENUM(BlueprintType)
 enum ECustomMovementMode
@@ -15,11 +15,11 @@ enum ECustomMovementMode
 };
 
 UCLASS()
-class DARKFORT_API UDfCharacterMovementComponent : public UCharacterMovementComponent
+class DARKFORT_API UDarkFortCharacterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
-	class FSavedMove_Df : public FSavedMove_Character
+	class FSavedMove_DarkFort : public FSavedMove_Character
 	{
 	public:
 		enum CompressedFlags
@@ -38,7 +38,7 @@ class DARKFORT_API UDfCharacterMovementComponent : public UCharacterMovementComp
 		uint8 Saved_bPrevWantsToCrouch : 1;
 		uint8 Saved_bWantsToProne : 1;
 
-		FSavedMove_Df();
+		FSavedMove_DarkFort();
 
 		virtual bool CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* InCharacter, float MaxDelta) const override;
 		virtual void Clear() override;
@@ -47,10 +47,10 @@ class DARKFORT_API UDfCharacterMovementComponent : public UCharacterMovementComp
 		virtual void PrepMoveFor(ACharacter* C) override;
 	};
 
-	class FNetworkPredictionData_Client_Df : public FNetworkPredictionData_Client_Character
+	class FNetworkPredictionData_Client_DarkFort : public FNetworkPredictionData_Client_Character
 	{
 	public:
-		FNetworkPredictionData_Client_Df(const UCharacterMovementComponent& ClientMovement);
+		FNetworkPredictionData_Client_DarkFort(const UCharacterMovementComponent& ClientMovement);
 
 		typedef FNetworkPredictionData_Client_Character Super;
 
@@ -91,7 +91,7 @@ class DARKFORT_API UDfCharacterMovementComponent : public UCharacterMovementComp
 	FTimerHandle TimerHandle_EnterProne;
 
 public:
-	UDfCharacterMovementComponent();
+	UDarkFortCharacterMovementComponent();
 
 	// Actor Component
 protected:

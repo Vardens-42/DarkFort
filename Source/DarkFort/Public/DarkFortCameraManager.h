@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "DFCameraManager.generated.h"
+#include "DarkFortCameraManager.generated.h"
 
 UCLASS()
-class DARKFORT_API ADFCameraManager : public APlayerCameraManager
+class DARKFORT_API ADarkFortCameraManager : public APlayerCameraManager
 {
 	GENERATED_BODY()
 
@@ -14,7 +14,7 @@ class DARKFORT_API ADFCameraManager : public APlayerCameraManager
 
 public:
 	// Sets default values for this empty's properties
-	ADFCameraManager();
+	ADarkFortCameraManager();
 
 	virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime) override;
 	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;

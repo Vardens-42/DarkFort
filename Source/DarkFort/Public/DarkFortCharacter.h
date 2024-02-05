@@ -20,7 +20,7 @@ class ADarkFortCharacter : public ACharacter
 {
 	GENERATED_BODY()
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) class UDfCharacterMovementComponent* DfCharacterMovementComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) class UDarkFortCharacterMovementComponent* DarkFortCharacterMovementComponent;
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -98,8 +98,8 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	
-	FORCEINLINE UDfCharacterMovementComponent* GetDfCharacterMovement() const {
-		return DfCharacterMovementComponent;
+	FORCEINLINE UDarkFortCharacterMovementComponent* GetDarkFortCharacterMovement() const {
+		return DarkFortCharacterMovementComponent;
 	}
 
 };

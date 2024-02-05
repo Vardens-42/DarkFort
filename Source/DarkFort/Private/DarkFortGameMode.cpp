@@ -2,7 +2,7 @@
 
 #include "DarkFortGameMode.h"
 #include "DarkFortCharacter.h"
-#include "DfPlayerController.h"
+#include "DarkFortPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 
 ADarkFortGameMode::ADarkFortGameMode()
@@ -14,5 +14,5 @@ ADarkFortGameMode::ADarkFortGameMode()
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 
-	PlayerControllerClass = ADfPlayerController::StaticClass();
+	PlayerControllerClass = ADarkFortPlayerController::StaticClass();
 }

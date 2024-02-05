@@ -2,20 +2,20 @@
 
 #pragma once
 
-#include "DFCameraManager.h"
+#include "DarkFortCameraManager.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "DfPlayerController.generated.h"
+#include "DarkFortPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DARKFORT_API ADfPlayerController : public APlayerController
+class DARKFORT_API ADarkFortPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this empty's properties
-	ADfPlayerController();
+	ADarkFortPlayerController();
 };

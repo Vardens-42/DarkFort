@@ -1,4 +1,4 @@
-#include "DfCharacterMovementComponent.h"
+#include "DarkFortCharacterMovementComponent.h"
 #include "DarkFortCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
@@ -6,7 +6,7 @@
 
 #pragma region Saved Move
 
-UDfCharacterMovementComponent::FSavedMove_Df::FSavedMove_Df()
+UDarkFortCharacterMovementComponent::FSavedMove_DarkFort::FSavedMove_DarkFort()
 {
 	Saved_bWantsToSprint=0;
 	Saved_bWantsToProne=0;
@@ -14,11 +14,11 @@ UDfCharacterMovementComponent::FSavedMove_Df::FSavedMove_Df()
 	Saved_bPressedDarkFortJump = 0;
 }
 
-bool UDfCharacterMovementComponent::FSavedMove_Df::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* InCharacter, float MaxDelta) const
+bool UDarkFortCharacterMovementComponent::FSavedMove_DarkFort::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* InCharacter, float MaxDelta) const
 {
-	FSavedMove_Df* NewDfMove = static_cast<FSavedMove_Df*>(NewMove.Get());
+	FSavedMove_DarkFort* NewDarkFortMove = static_cast<FSavedMove_DarkFort*>(NewMove.Get());
 
-	if (Saved_bWantsToSprint != NewDfMove->Saved_bWantsToSprint)
+	if (Saved_bWantsToSprint != NewDarkFortMove->Saved_bWantsToSprint)
 	{
 		return false;
 	}
@@ -26,14 +26,14 @@ bool UDfCharacterMovementComponent::FSavedMove_Df::CanCombineWith(const FSavedMo
 	return FSavedMove_Character::CanCombineWith(NewMove, InCharacter, MaxDelta);
 }
 
-void UDfCharacterMovementComponent::FSavedMove_Df::Clear()
+void UDarkFortCharacterMovementComponent::FSavedMove_DarkFort::Clear()
 {
 	FSavedMove_Character::Clear();
 
 	Saved_bWantsToSprint = 0;
 }
 
-uint8 UDfCharacterMovementComponent::FSavedMove_Df::GetCompressedFlags() const
+uint8 UDarkFortCharacterMovementComponent::FSavedMove_DarkFort::GetCompressedFlags() const
 {
 	uint8 Result = FSavedMove_Character::GetCompressedFlags();
 
@@ -42,11 +42,11 @@ uint8 UDfCharacterMovementComponent::FSavedMove_Df::GetCompressedFlags() const
 	return Result;
 }
 
-void UDfCharacterMovementComponent::FSavedMove_Df::SetMoveFor(ACharacter* C, float InDeltaTime, FVector const& NewAccel, FNetworkPredictionData_Client_Character& ClientData)
+void UDarkFortCharacterMovementComponent::FSavedMove_DarkFort::SetMoveFor(ACharacter* C, float InDeltaTime, FVector const& NewAccel, FNetworkPredictionData_Client_Character& ClientData)
 {
 	FSavedMove_Character::SetMoveFor(C, InDeltaTime, NewAccel, ClientData);
 
-	UDfCharacterMovementComponent* CharacterMovement = Cast<UDfCharacterMovementComponent>(C->GetCharacterMovement());
+	UDarkFortCharacterMovementComponent* CharacterMovement = Cast<UDarkFortCharacterMovementComponent>(C->GetCharacterMovement());
 
 	Saved_bWantsToSprint = CharacterMovement->Safe_bWantsToSprint;
 	Saved_bPrevWantsToCrouch = CharacterMovement->Safe_bPrevWantsToCrouch;
@@ -55,11 +55,11 @@ void UDfCharacterMovementComponent::FSavedMove_Df::SetMoveFor(ACharacter* C, flo
 	Saved_bPressedDarkFortJump = CharacterMovement->DarkFortCharacterOwner->bPressedDarkFortJump;
 }
 
-void UDfCharacterMovementComponent::FSavedMove_Df::PrepMoveFor(ACharacter* C)
+void UDarkFortCharacterMovementComponent::FSavedMove_DarkFort::PrepMoveFor(ACharacter* C)
 {
 	FSavedMove_Character::PrepMoveFor(C);
 
-	UDfCharacterMovementComponent* CharacterMovement = Cast<UDfCharacterMovementComponent>(C->GetCharacterMovement());
+	UDarkFortCharacterMovementComponent* CharacterMovement = Cast<UDarkFortCharacterMovementComponent>(C->GetCharacterMovement());
 
 	CharacterMovement->Safe_bWantsToSprint = Saved_bWantsToSprint;
 	CharacterMovement->Safe_bPrevWantsToCrouch = Saved_bPrevWantsToCrouch;
@@ -69,24 +69,24 @@ void UDfCharacterMovementComponent::FSavedMove_Df::PrepMoveFor(ACharacter* C)
 #pragma endregion
 
 #pragma region Client Network Prediction Data
-UDfCharacterMovementComponent::FNetworkPredictionData_Client_Df::FNetworkPredictionData_Client_Df(const UCharacterMovementComponent& ClientMovement) : Super(ClientMovement)
+UDarkFortCharacterMovementComponent::FNetworkPredictionData_Client_DarkFort::FNetworkPredictionData_Client_DarkFort(const UCharacterMovementComponent& ClientMovement) : Super(ClientMovement)
 {
 }
 
-FSavedMovePtr UDfCharacterMovementComponent::FNetworkPredictionData_Client_Df::AllocateNewMove()
+FSavedMovePtr UDarkFortCharacterMovementComponent::FNetworkPredictionData_Client_DarkFort::AllocateNewMove()
 {
-	return FSavedMovePtr(new FSavedMove_Df());
+	return FSavedMovePtr(new FSavedMove_DarkFort());
 }
 
-FNetworkPredictionData_Client* UDfCharacterMovementComponent::GetPredictionData_Client() const
+FNetworkPredictionData_Client* UDarkFortCharacterMovementComponent::GetPredictionData_Client() const
 {
 	check(PawnOwner != nullptr)
 
 		if (ClientPredictionData == nullptr)
 		{
-			UDfCharacterMovementComponent* MutableThis = const_cast<UDfCharacterMovementComponent*>(this);
+			UDarkFortCharacterMovementComponent* MutableThis = const_cast<UDarkFortCharacterMovementComponent*>(this);
 
-			MutableThis->ClientPredictionData = new FNetworkPredictionData_Client_Df(*this);
+			MutableThis->ClientPredictionData = new FNetworkPredictionData_Client_DarkFort(*this);
 			MutableThis->ClientPredictionData->MaxSmoothNetUpdateDist = 92.f;
 			MutableThis->ClientPredictionData->NoSmoothNetUpdateDist = 140.f;
 		}
@@ -97,20 +97,20 @@ FNetworkPredictionData_Client* UDfCharacterMovementComponent::GetPredictionData_
 
 #pragma region CMC
 //Movement Pipeline
-void UDfCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
+void UDarkFortCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 {
 	Super::UpdateFromCompressedFlags(Flags);
 
 	Safe_bWantsToSprint = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
 }
-void UDfCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity)
+void UDarkFortCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity)
 {
 	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
 
 	Safe_bPrevWantsToCrouch = bWantsToCrouch;
 
 }
-void UDfCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
+void UDarkFortCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 {
 	Super::PhysCustom(deltaTime, Iterations);
 
@@ -128,7 +128,7 @@ void UDfCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations
 }
 
 //Movement Event
-void UDfCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
+void UDarkFortCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
 {
 	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 
@@ -140,16 +140,16 @@ void UDfCharacterMovementComponent::OnMovementModeChanged(EMovementMode Previous
 }
 
 // Getters/Helpers
-bool UDfCharacterMovementComponent::IsMovingOnGround() const
+bool UDarkFortCharacterMovementComponent::IsMovingOnGround() const
 {
 	return Super::IsMovingOnGround() || IsCustomMovementMode(CMOVE_Slide) || IsCustomMovementMode(CMOVE_Prone);
 }
-bool UDfCharacterMovementComponent::CanCrouchInCurrentState() const
+bool UDarkFortCharacterMovementComponent::CanCrouchInCurrentState() const
 {
 	return Super::CanCrouchInCurrentState() && IsMovingOnGround();
 }
 
-float UDfCharacterMovementComponent::GetMaxSpeed() const
+float UDarkFortCharacterMovementComponent::GetMaxSpeed() const
 {
 	if (IsMovementMode(MOVE_Walking) && Safe_bWantsToSprint && !IsCrouching())
     {
@@ -169,7 +169,7 @@ float UDfCharacterMovementComponent::GetMaxSpeed() const
 		return -1.f;
 	}
 }
-float UDfCharacterMovementComponent::GetMaxBrakingDeceleration() const
+float UDarkFortCharacterMovementComponent::GetMaxBrakingDeceleration() const
 {
 	if (MovementMode != MOVE_Custom) return Super::GetMaxBrakingDeceleration();
 
@@ -184,7 +184,7 @@ float UDfCharacterMovementComponent::GetMaxBrakingDeceleration() const
 			return -1.f;
 	}
 }
-void UDfCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
+void UDarkFortCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
 {
 	//Sprinting - For the actual sprinting functionality, see GetMaxSpeed()
     if (CharacterOwner->GetLocalRole() != ROLE_SimulatedProxy)
@@ -238,13 +238,13 @@ void UDfCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float Del
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
 }
 
-UDfCharacterMovementComponent::UDfCharacterMovementComponent()
+UDarkFortCharacterMovementComponent::UDarkFortCharacterMovementComponent()
 {
 	NavAgentProps.bCanCrouch = true;
 	SetIsReplicatedByDefault(true);
 }
 
-void UDfCharacterMovementComponent::InitializeComponent()
+void UDarkFortCharacterMovementComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
@@ -254,7 +254,7 @@ void UDfCharacterMovementComponent::InitializeComponent()
 #pragma endregion
 
 #pragma region Slide
-void UDfCharacterMovementComponent::EnterSlide(EMovementMode PrevMode, ECustomMovementMode PrevCustomMode)
+void UDarkFortCharacterMovementComponent::EnterSlide(EMovementMode PrevMode, ECustomMovementMode PrevCustomMode)
 {
 	bWantsToCrouch = true;
 	bOrientRotationToMovement = false;
@@ -265,13 +265,13 @@ void UDfCharacterMovementComponent::EnterSlide(EMovementMode PrevMode, ECustomMo
 	SetMovementMode(MOVE_Custom, CMOVE_Slide);
 }
 
-void UDfCharacterMovementComponent::ExitSlide()
+void UDarkFortCharacterMovementComponent::ExitSlide()
 {
 	bWantsToCrouch = false;
 	bOrientRotationToMovement = true;
 }
 
-bool UDfCharacterMovementComponent::CanSlide() const
+bool UDarkFortCharacterMovementComponent::CanSlide() const
 {
 	FVector Start = UpdatedComponent->GetComponentLocation();
 	FVector End = Start + CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.5f * FVector::DownVector;
@@ -282,7 +282,7 @@ bool UDfCharacterMovementComponent::CanSlide() const
 	return bValidSurface && bEnoughSpeed;
 }
 
-void UDfCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations)
+void UDarkFortCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations)
 {
 	//This makes sure the deltatime is not less than the min tick time. Don't perform any physics in this state.
 	if (deltaTime < MIN_TICK_TIME)
@@ -491,12 +491,12 @@ void UDfCharacterMovementComponent::PhysSlide(float deltaTime, int32 Iterations)
 #pragma endregion
 
 #pragma region Prone
-void UDfCharacterMovementComponent::Server_EnterProne_Implementation()
+void UDarkFortCharacterMovementComponent::Server_EnterProne_Implementation()
 {
 	Safe_bWantsToProne = true;
 }
 
-void UDfCharacterMovementComponent::EnterProne(EMovementMode PrevMode, ECustomMovementMode PrevCustomMode)
+void UDarkFortCharacterMovementComponent::EnterProne(EMovementMode PrevMode, ECustomMovementMode PrevCustomMode)
 {
 	bWantsToCrouch = true;
 
@@ -508,18 +508,18 @@ void UDfCharacterMovementComponent::EnterProne(EMovementMode PrevMode, ECustomMo
 	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, true, NULL);
 }
 
-void UDfCharacterMovementComponent::ExitProne()
+void UDarkFortCharacterMovementComponent::ExitProne()
 {
 }
 
-bool UDfCharacterMovementComponent::CanProne() const
+bool UDarkFortCharacterMovementComponent::CanProne() const
 {
 	return IsCustomMovementMode(CMOVE_Slide) || IsMovementMode(MOVE_Walking) && IsCrouching();
 }
 
 
 
-void UDfCharacterMovementComponent::PhysProne(float deltaTime, int32 Iterations)
+void UDarkFortCharacterMovementComponent::PhysProne(float deltaTime, int32 Iterations)
 {
 	if (deltaTime < MIN_TICK_TIME)
 	{
@@ -708,41 +708,41 @@ void UDfCharacterMovementComponent::PhysProne(float deltaTime, int32 Iterations)
 #pragma endregion
 
 #pragma region Interface
-void UDfCharacterMovementComponent::SprintPressed()
+void UDarkFortCharacterMovementComponent::SprintPressed()
 {
 	Safe_bWantsToSprint = true;
 }
 
-void UDfCharacterMovementComponent::SprintReleased()
+void UDarkFortCharacterMovementComponent::SprintReleased()
 {
 	Safe_bWantsToSprint = false;
 }
 
-void UDfCharacterMovementComponent::CrouchPressed()
+void UDarkFortCharacterMovementComponent::CrouchPressed()
 {
 	bWantsToCrouch = ~bWantsToCrouch;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_EnterProne, this, &UDfCharacterMovementComponent::TryEnterProne, Prone_EnterHoldDuration);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_EnterProne, this, &UDarkFortCharacterMovementComponent::TryEnterProne, Prone_EnterHoldDuration);
 }
 
-void UDfCharacterMovementComponent::CrouchReleased()
+void UDarkFortCharacterMovementComponent::CrouchReleased()
 {
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_EnterProne);
 }
 
-bool UDfCharacterMovementComponent::IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const
+bool UDarkFortCharacterMovementComponent::IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const
 {
 	return MovementMode == MOVE_Custom && CustomMovementMode == InCustomMovementMode;
 }
 
-bool UDfCharacterMovementComponent::IsMovementMode(EMovementMode InMovementMode) const
+bool UDarkFortCharacterMovementComponent::IsMovementMode(EMovementMode InMovementMode) const
 {
 	return InMovementMode == MovementMode;
 }
 
-void UDfCharacterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UDarkFortCharacterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 { 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
-	DOREPLIFETIME(UDfCharacterMovementComponent, bIsSprinting);
+	DOREPLIFETIME(UDarkFortCharacterMovementComponent, bIsSprinting);
 }
 
 #pragma endregion
