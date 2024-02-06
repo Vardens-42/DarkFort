@@ -5,7 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
+#include "DarkFort.h"
 #include "DarkFortCharacter.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, ADarkFortCharacter*, character);
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -16,7 +21,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ADarkFortCharacter : public ACharacter
+class ADarkFortCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 protected:
@@ -102,5 +107,67 @@ public:
 		return DarkFortCharacterMovementComponent;
 	}
 
-};
+public:
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UPROPERTY(BlueprintAssignable, Category = "Character")
+	FCharacterDiedDelegate OnCharacterDied;
+
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	virtual bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	virtual int32 GetAbilityLevel(DarkFortAbilityID AbilityID) const;
+
+	virtual void RemoveCharacterAbilities();
+
+	virtual void Die();
+
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	virtual void FinishDying();
+
+	UFUNCTION(BlueprintCallable, Category = "Character|Attributes")
+	int32 GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Character|Attributes")
+	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Character|Attributes")
+	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Character|Attributes")
+	float GetStamina() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Character|Attributes")
+	float GetMaxStamina() const;
+
+protected:
+	TWeakObjectPtr<class UCharacterAbilitySystemComponent> AbilitySystemComponent;
+	TWeakObjectPtr<class UDarkFortAttributeSetBase> AttributeSetBase;
+
+	FGameplayTag DeadTag;
+	FGameplayTag EffectRemoveOnDeathTag;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character")
+	FText CharacterName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Animation")
+	UAnimMontage* DeathMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Animation")
+	TArray <TSubclassOf<class UCharacterGameplayAbility>> CharacterAbilities;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TSubclassOf<class UGameplayEffect> DefaultAttributes;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
+
+	virtual void AddCharacterAbilities();
+	virtual void InitializeAttributes();
+	virtual void AddStartupEffects();
+
+	virtual void SetHealth(float Health);
+	virtual void SetStamina(float Stamina);
+
+};
