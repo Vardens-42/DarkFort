@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DarkFortPlayerController.h"
+#include "Player/DarkFortPlayerController.h"
 #include "GameFramework/GameModeBase.h"
 #include "DarkFortGameMode.generated.h"
 

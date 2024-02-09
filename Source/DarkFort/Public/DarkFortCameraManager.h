@@ -14,7 +14,7 @@ class DARKFORT_API ADarkFortCameraManager : public APlayerCameraManager
 
 public:
 	// Sets default values for this empty's properties
-	ADarkFortCameraManager();
+	ADarkFortCameraManager(const FObjectInitializer& ObjectInitializer);
 
 	virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime) override;
 	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DarkFortCharacter.h"
+#include "DarkFortCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DarkFortCharacterMovementComponent.generated.h"
 
@@ -84,7 +84,7 @@ class DARKFORT_API UDarkFortCharacterMovementComponent : public UCharacterMoveme
 	UPROPERTY(EditDefaultsOnly) float BreakingDecelerationProning = 2500.f;
 
 	//Transient
-	UPROPERTY(Transient) ADarkFortCharacter* DarkFortCharacterOwner;
+	UPROPERTY(Transient) ADarkFortCharacterBase* DarkFortCharacterOwner;
 	bool Safe_bWantsToSprint;
 	bool Safe_bPrevWantsToCrouch;
 	bool Safe_bWantsToProne;

@@ -8,9 +8,9 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
 #include "DarkFort.h"
-#include "DarkFortCharacter.generated.h"
+#include "DarkFortCharacterBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, ADarkFortCharacter*, character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, ADarkFortCharacterBase*, character);
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -21,7 +21,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ADarkFortCharacter : public ACharacter, public IAbilitySystemInterface
+class ADarkFortCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 protected:
@@ -67,7 +67,7 @@ public:
 	bool bPressedDarkFortJump;
 
 public:
-	ADarkFortCharacter(const FObjectInitializer& ObjectInitializer);
+	ADarkFortCharacterBase(const class FObjectInitializer& ObjectInitializer);
 	
 	FCollisionQueryParams GetIgnoreCharacterParams() const;
 	

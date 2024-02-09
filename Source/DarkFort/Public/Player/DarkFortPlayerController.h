@@ -16,6 +16,7 @@ class DARKFORT_API ADarkFortPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this empty's properties
 	ADarkFortPlayerController();
+
+	virtual void OnPossess(APawn* InPawn) override;
 };

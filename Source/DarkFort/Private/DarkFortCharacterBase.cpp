@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "DarkFortCharacter.h"
+#include "DarkFortCharacterBase.h"
 
 #include "DarkFortCharacterMovementComponent.h"
 #include "Engine/LocalPlayer.h"
@@ -15,14 +15,14 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-
+#include "Player/DarkFortPlayerController.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
-// ADarkFortCharacter
+// ADarkFortCharacterBase
 
-ADarkFortCharacter::ADarkFortCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UDarkFortCharacterMovementComponent>(CharacterMovementComponentName))
+ADarkFortCharacterBase::ADarkFortCharacterBase(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UDarkFortCharacterMovementComponent>(CharacterMovementComponentName))
 {
 
 	DarkFortCharacterMovementComponent = Cast<UDarkFortCharacterMovementComponent>(GetCharacterMovement());
@@ -78,37 +78,37 @@ ADarkFortCharacter::ADarkFortCharacter(const FObjectInitializer& ObjectInitializ
 	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("State.RemoveOnDeath"));
 }
 
-void ADarkFortCharacter::BeginPlay()
+void ADarkFortCharacterBase::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
 
 	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (ADarkFortPlayerController* PlayerController = Cast<ADarkFortPlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-	}
+	}	
 }
 
-UAbilitySystemComponent* ADarkFortCharacter::GetAbilitySystemComponent() const
+UAbilitySystemComponent* ADarkFortCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent.Get();
 }
 
-bool ADarkFortCharacter::IsAlive() const
+bool ADarkFortCharacterBase::IsAlive() const
 {
 	return GetHealth() > 0.0f;
 }
 
-int32 ADarkFortCharacter::GetAbilityLevel(DarkFortAbilityID AbilityID) const
+int32 ADarkFortCharacterBase::GetAbilityLevel(DarkFortAbilityID AbilityID) const
 {
 	return 1;
 }
 
-void ADarkFortCharacter::RemoveCharacterAbilities()
+void ADarkFortCharacterBase::RemoveCharacterAbilities()
 {
 	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->CharacterAbilitiesGiven) 
 	{
@@ -130,7 +130,7 @@ void ADarkFortCharacter::RemoveCharacterAbilities()
 	AbilitySystemComponent->CharacterAbilitiesGiven = false;
 }
 
-void ADarkFortCharacter::Die()
+void ADarkFortCharacterBase::Die()
 {
 	RemoveCharacterAbilities();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -159,12 +159,12 @@ void ADarkFortCharacter::Die()
 	}
 }
 
-void ADarkFortCharacter::FinishDying()
+void ADarkFortCharacterBase::FinishDying()
 {
 	Destroy();
 }
 
-int32 ADarkFortCharacter::GetCharacterLevel() const
+int32 ADarkFortCharacterBase::GetCharacterLevel() const
 {
 	if (AttributeSetBase.IsValid()) 
 	{
@@ -173,7 +173,7 @@ int32 ADarkFortCharacter::GetCharacterLevel() const
 	return 0;
 }
 
-float ADarkFortCharacter::GetHealth() const
+float ADarkFortCharacterBase::GetHealth() const
 {
 	if (AttributeSetBase.IsValid()) 
 	{
@@ -182,7 +182,7 @@ float ADarkFortCharacter::GetHealth() const
 	return 0.0f;
 }
 
-float ADarkFortCharacter::GetMaxHealth() const
+float ADarkFortCharacterBase::GetMaxHealth() const
 {
 	if (AttributeSetBase.IsValid()) 
 	{
@@ -191,7 +191,7 @@ float ADarkFortCharacter::GetMaxHealth() const
 	return 0.0f;
 }
 
-float ADarkFortCharacter::GetStamina() const
+float ADarkFortCharacterBase::GetStamina() const
 {
 	if (AttributeSetBase.IsValid()) 
 	{
@@ -200,7 +200,7 @@ float ADarkFortCharacter::GetStamina() const
 	return 0.0f;
 }
 
-float ADarkFortCharacter::GetMaxStamina() const
+float ADarkFortCharacterBase::GetMaxStamina() const
 {
 	if (AttributeSetBase.IsValid()) 
 	{
@@ -209,7 +209,7 @@ float ADarkFortCharacter::GetMaxStamina() const
 	return 0.0f;
 }
 
-void ADarkFortCharacter::AddCharacterAbilities()
+void ADarkFortCharacterBase::AddCharacterAbilities()
 {
 	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->CharacterAbilitiesGiven) 
 	{
@@ -224,7 +224,7 @@ void ADarkFortCharacter::AddCharacterAbilities()
 	AbilitySystemComponent->CharacterAbilitiesGiven = true;
 }
 
-void ADarkFortCharacter::InitializeAttributes()
+void ADarkFortCharacterBase::InitializeAttributes()
 {
 	if (!AbilitySystemComponent.IsValid())
 	{
@@ -247,7 +247,7 @@ void ADarkFortCharacter::InitializeAttributes()
 	}
 }
 
-void ADarkFortCharacter::AddStartupEffects()
+void ADarkFortCharacterBase::AddStartupEffects()
 {
 	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->StartupEffectsApplied) 
 	{
@@ -269,7 +269,7 @@ void ADarkFortCharacter::AddStartupEffects()
 	AbilitySystemComponent->StartupEffectsApplied = true;
 }
 
-void ADarkFortCharacter::SetHealth(float Health)
+void ADarkFortCharacterBase::SetHealth(float Health)
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -277,7 +277,7 @@ void ADarkFortCharacter::SetHealth(float Health)
 	}
 }
 
-void ADarkFortCharacter::SetStamina(float Stamina)
+void ADarkFortCharacterBase::SetStamina(float Stamina)
 {
 	if (AttributeSetBase.IsValid())
 	{
@@ -288,7 +288,7 @@ void ADarkFortCharacter::SetStamina(float Stamina)
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void ADarkFortCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ADarkFortCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
@@ -298,20 +298,20 @@ void ADarkFortCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADarkFortCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADarkFortCharacterBase::Move);
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADarkFortCharacter::Look);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADarkFortCharacterBase::Look);
 
 		// Sprinting
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ADarkFortCharacter::StartSprint);
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ADarkFortCharacter::StopSprinting);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ADarkFortCharacterBase::StartSprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ADarkFortCharacterBase::StopSprinting);
 
 		// Crouching
-		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ADarkFortCharacter::ToggleCrouch);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ADarkFortCharacterBase::ToggleCrouch);
 
 		// Walking
-		//EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Started, this, &ADarkFortCharacter::ToggleWalk);
+		//EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Started, this, &ADarkFortCharacterBase::ToggleWalk);
 	}
 	else
 	{
@@ -319,9 +319,9 @@ void ADarkFortCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 }
 
-void ADarkFortCharacter::Move(const FInputActionValue& Value)
+void ADarkFortCharacterBase::Move(const FInputActionValue& Value)
 {
-	if (Controller)
+	if (Controller && IsAlive())
 	{
 		// input is a Vector2D
 		const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -355,7 +355,7 @@ void ADarkFortCharacter::Move(const FInputActionValue& Value)
 		*/
 }
 
-void ADarkFortCharacter::Look(const FInputActionValue& Value)
+void ADarkFortCharacterBase::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -374,7 +374,7 @@ void ADarkFortCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-FCollisionQueryParams ADarkFortCharacter::GetIgnoreCharacterParams() const
+FCollisionQueryParams ADarkFortCharacterBase::GetIgnoreCharacterParams() const
 {
 	FCollisionQueryParams Params;
 
@@ -386,30 +386,30 @@ FCollisionQueryParams ADarkFortCharacter::GetIgnoreCharacterParams() const
 	return Params;
 }
 
-void ADarkFortCharacter::Jump()
+void ADarkFortCharacterBase::Jump()
 {
 	Super::Jump();
 	bPressedDarkFortJump = true;
 	//bPressedJump = false;
 }
 
-void ADarkFortCharacter::StopJumping()
+void ADarkFortCharacterBase::StopJumping()
 {
 	Super::StopJumping();
 	bPressedDarkFortJump = false;
 }
 
-void ADarkFortCharacter::StartSprint()
+void ADarkFortCharacterBase::StartSprint()
 {
 	DarkFortCharacterMovementComponent->SprintPressed();
 }
 
-void ADarkFortCharacter::StopSprinting()
+void ADarkFortCharacterBase::StopSprinting()
 {
 	DarkFortCharacterMovementComponent->SprintReleased();
 }
 
-void ADarkFortCharacter::ToggleCrouch()
+void ADarkFortCharacterBase::ToggleCrouch()
 {
 	DarkFortCharacterMovementComponent->CrouchPressed();
 }

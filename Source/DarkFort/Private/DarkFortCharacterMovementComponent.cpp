@@ -1,5 +1,5 @@
 #include "DarkFortCharacterMovementComponent.h"
-#include "DarkFortCharacter.h"
+#include "DarkFortCharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
@@ -248,7 +248,7 @@ void UDarkFortCharacterMovementComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	DarkFortCharacterOwner = Cast<ADarkFortCharacter>(GetOwner());
+	DarkFortCharacterOwner = Cast<ADarkFortCharacterBase>(GetOwner());
 }
 
 #pragma endregion
