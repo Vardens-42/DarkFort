@@ -8,17 +8,6 @@ UDarkFortAttributeSet::UDarkFortAttributeSet()
 {
 }
 
-void UDarkFortAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, Health, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, CharacterLevel, COND_None, REPNOTIFY_Always);
-}
-
 void UDarkFortAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UDarkFortAttributeSet, Health, OldHealth);
@@ -44,3 +33,13 @@ void UDarkFortAttributeSet::OnRep_CharacterLevel(const FGameplayAttributeData& O
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UDarkFortAttributeSet, CharacterLevel, OldCharacterLevel);
 }
 
+void UDarkFortAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDarkFortAttributeSet, CharacterLevel, COND_None, REPNOTIFY_Always);
+}
