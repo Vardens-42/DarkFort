@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "DarkFortCameraManager.h"
+#include "Camera/DarkFortCameraManager.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "DarkFortPlayerController.generated.h"

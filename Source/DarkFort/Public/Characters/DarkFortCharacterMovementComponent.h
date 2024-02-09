@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DarkFortCharacter.h"
+#include "Characters/DarkFortCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DarkFortCharacterMovementComponent.generated.h"
 

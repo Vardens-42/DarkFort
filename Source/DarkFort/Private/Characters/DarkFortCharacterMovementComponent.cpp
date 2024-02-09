@@ -1,5 +1,5 @@
-#include "DarkFortCharacterMovementComponent.h"
-#include "DarkFortCharacter.h"
+#include "Characters/DarkFortCharacterMovementComponent.h"
+#include "Characters/DarkFortCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"

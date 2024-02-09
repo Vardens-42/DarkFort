@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "DarkFortGameMode.h"
-#include "DarkFortCharacter.h"
-#include "DarkFortPlayerController.h"
+#include "GameModes/DarkFortGameMode.h"
+#include "Characters/DarkFortCharacter.h"
+#include "Player/DarkFortPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 
 ADarkFortGameMode::ADarkFortGameMode()
