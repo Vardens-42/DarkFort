@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DarkFortPlayerController.h"
-#include "DarkFortCameraManager.h"
+#include "Player/DarkFortPlayerController.h"
+#include "Camera/DarkFortCameraManager.h"
 
 ADarkFortPlayerController::ADarkFortPlayerController()
 {

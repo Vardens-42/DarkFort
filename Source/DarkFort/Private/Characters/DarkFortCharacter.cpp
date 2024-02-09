@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "DarkFortCharacter.h"
+#include "Characters/DarkFortCharacter.h"
 
-#include "DarkFortCharacterMovementComponent.h"
+#include "Characters/DarkFortCharacterMovementComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"

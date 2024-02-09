@@ -1,7 +1,7 @@
-#include "DarkFortCameraManager.h"
-#include "DarkFortCharacter.h"
-#include "DarkFortPlayerController.h"
-#include "DarkFortCharacterMovementComponent.h"
+#include "Camera/DarkFortCameraManager.h"
+#include "Characters/DarkFortCharacter.h"
+#include "Characters/DarkFortCharacterMovementComponent.h"
+#include "Player/DarkFortPlayerController.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
@@ -50,19 +50,16 @@ void ADarkFortCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, float
 
 void ADarkFortCameraManager::UpdateCameraLocation(const float DeltaTime, FMinimalViewInfo& OutCameraView)
 {
-    // TODO: track multiple players, predict movement direction, maybe track enemies, etc.
-	ADarkFortPlayerController* DarkFortPlayerController = Cast<ADarkFortPlayerController>(GetOwningPlayerController());
-    if (ADarkFortCharacter* DarkFortCharacter = Cast<ADarkFortCharacter>(DarkFortPlayerController->GetPawn()))
-	{	
-        // CameraRotation and CameraDistance are two variables that can be edited to adjust the camera viewpoint
-        OutCameraView.Location = DarkFortCharacter->GetActorLocation() + (GetOwningPlayerController()->GetControlRotation().Vector() * -210);
-        OutCameraView.Rotation = GetOwningPlayerController()->GetControlRotation();
-    }
-    else
+    if (PCOwner != nullptr)
     {
-		// Fall back to default player controller view
-		// TODO: potentially incorrect, maybe focusing the player start the player will spawn at while we
-		// wait for him to spawn would be more correct
-		DarkFortCharacter->GetActorEyesViewPoint(OutCameraView.Location, OutCameraView.Rotation);
+        if (const APawn* Pawn = PCOwner->GetPawn())
+        {
+            OutCameraView.Location = Pawn->GetActorLocation() + (GetOwningPlayerController()->GetControlRotation().Vector() * -210);
+            OutCameraView.Rotation = GetOwningPlayerController()->GetControlRotation();
+        }
+        else
+        {
+            PCOwner->GetActorEyesViewPoint(OutCameraView.Location, OutCameraView.Rotation);
+        }
     }
 }
