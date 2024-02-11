@@ -103,7 +103,7 @@ void ADarkFortCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void ADarkFortCharacter::Move(const FInputActionValue& Value)
 {
-	if (Controller)
+	if (Controller && IsAlive())
 	{
 		// input is a Vector2D
 		const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -170,9 +170,12 @@ FCollisionQueryParams ADarkFortCharacter::GetIgnoreCharacterParams() const
 
 void ADarkFortCharacter::Jump()
 {
-	Super::Jump();
-	bPressedDarkFortJump = true;
-	//bPressedJump = false;
+	if (IsAlive())
+	{
+		Super::Jump();
+		bPressedDarkFortJump = true;
+		//bPressedJump = false;
+	}
 }
 
 void ADarkFortCharacter::StopJumping()
@@ -183,7 +186,10 @@ void ADarkFortCharacter::StopJumping()
 
 void ADarkFortCharacter::StartSprint()
 {
-	DarkFortCharacterMovementComponent->SprintPressed();
+	if (IsAlive())
+	{
+		DarkFortCharacterMovementComponent->SprintPressed();
+	}
 }
 
 void ADarkFortCharacter::StopSprinting()
@@ -193,9 +199,11 @@ void ADarkFortCharacter::StopSprinting()
 
 void ADarkFortCharacter::ToggleCrouch()
 {
-	DarkFortCharacterMovementComponent->CrouchPressed();
+	if (IsAlive())
+	{
+		DarkFortCharacterMovementComponent->CrouchPressed();
+	}
 }
-
 #pragma endregion
 
 #pragma region Gameplay Ability System
