@@ -35,6 +35,7 @@ public:
 
 	FReceivedDamageDelegate ReceivedDamage;
 
+	UFUNCTION()
 	virtual void ReceiveDamage(UDarkFortAbilitySystemComponent* SourceASC, float UnmitigatedDamage, float MitigatedDamage);
 	
 	///////////////////////////////////

@@ -50,6 +50,14 @@ public:
 	FGameplayAttributeData CharacterLevel;
 	ATTRIBUTE_ACCESSORS(UDarkFortAttributeSet, CharacterLevel)
 
+    UPROPERTY(BlueprintReadOnly, Category = "Armor", ReplicatedUsing = OnRep_Armor)
+    FGameplayAttributeData Armor;
+    ATTRIBUTE_ACCESSORS(UDarkFortAttributeSet, Armor)
+
+	UPROPERTY(BlueprintReadOnly, Category = "Strength", ReplicatedUsing = OnRep_Strength)
+    FGameplayAttributeData Strength;
+    ATTRIBUTE_ACCESSORS(UDarkFortAttributeSet, Strength)
+
 protected:
 
 	UFUNCTION()
@@ -66,5 +74,12 @@ protected:
 
 	UFUNCTION()
 	virtual void OnRep_CharacterLevel(const FGameplayAttributeData& OldCharacterLevel);
+
+	UFUNCTION()
+	virtual void OnRep_Armor(const FGameplayAttributeData& OldArmor);
+
+	UFUNCTION()
+	virtual void OnRep_Strength(const FGameplayAttributeData& OldStrength);
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 };

@@ -255,8 +255,8 @@ void ADarkFortCharacter::Die()
 	RemoveCharacterAbilities();
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCharacterMovement()->GravityScale = 0;
-	GetCharacterMovement()->Velocity = FVector(0);
+	//GetCharacterMovement()->GravityScale = 0;
+	//GetCharacterMovement()->Velocity = FVector(0);
 
 	OnCharacterDied.Broadcast(this);
 
@@ -336,6 +336,25 @@ float ADarkFortCharacter::GetMaxStamina() const
 	return 0.0f;
 }
 
+float ADarkFortCharacter::GetArmor() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetArmor();
+	}
+
+	return 0.0f;
+}
+float ADarkFortCharacter::GetStrength() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetStrength();
+	}
+
+	return 0.0f;
+}
+
 void ADarkFortCharacter::AddCharacterAbilities()
 {
 	// Grant abilities, but only on the server	
@@ -377,10 +396,6 @@ void ADarkFortCharacter::InitializeAttributes()
 	}
 }
 
-void ADarkFortCharacter::InitializeStartingAbilities()
-{
-}
-
 void ADarkFortCharacter::AddStartupEffects()
 {
 	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->bStartupEffectsApplied)
@@ -417,6 +432,14 @@ void ADarkFortCharacter::SetStamina(float Stamina)
 	if (AttributeSetBase.IsValid())
 	{
 		AttributeSetBase->SetStamina(Stamina);
+	}
+}
+
+void ADarkFortCharacter::SetArmor(float Armor)
+{
+	if (AttributeSetBase.IsValid())
+	{
+		AttributeSetBase->SetArmor(Armor);
 	}
 }
 

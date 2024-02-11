@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Characters/DarkFortCharacter.h"
-#include "Player/DarkFortPlayerState.h"
 #include "DarkFortPlayerCharacter.generated.h"
 
 /**
@@ -19,6 +18,8 @@ class DARKFORT_API ADarkFortPlayerCharacter : public ADarkFortCharacter
 public: 
 	ADarkFortPlayerCharacter(const class FObjectInitializer& ObjectInitializer);
 
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	virtual void PossessedBy(AController* NewController) override;
 
 protected:
@@ -27,9 +28,9 @@ protected:
 
 	FGameplayTag DeadTag;
 
+	virtual void BeginPlay() override;
+
 	virtual void OnRep_PlayerState() override;
 	
-	void InitializeStartingValues(ADarkFortPlayerState* PS);
-
 	void BindASCInput();
 };

@@ -113,7 +113,7 @@ public:
 
 //GAS
 public:
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UPROPERTY(BlueprintAssignable, Category = "Dark Fort|Character")
 	FCharacterDiedDelegate OnCharacterDied;
@@ -146,6 +146,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
 	float GetMaxStamina() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	float GetArmor() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	float GetStrength() const;
+
 protected:
 	TWeakObjectPtr<class UDarkFortAbilitySystemComponent> AbilitySystemComponent;
 	TWeakObjectPtr<class UDarkFortAttributeSet> AttributeSetBase;
@@ -170,9 +176,9 @@ protected:
 
 	virtual void AddCharacterAbilities();
 	virtual void InitializeAttributes();
-	virtual void InitializeStartingAbilities();
 	virtual void AddStartupEffects();
 
 	virtual void SetHealth(float Health);
 	virtual void SetStamina(float Stamina);
+	virtual void SetArmor(float Armor);
 };

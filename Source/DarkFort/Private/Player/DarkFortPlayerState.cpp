@@ -63,6 +63,16 @@ int32 ADarkFortPlayerState::GetCharacterLevel() const
 	return AttributeSetBase->GetCharacterLevel();
 }
 
+float ADarkFortPlayerState::GetArmor() const
+{
+	return AttributeSetBase->GetArmor();
+}
+
+float ADarkFortPlayerState::GetStrength() const
+{
+	return AttributeSetBase->GetStrength();
+}
+
 void ADarkFortPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
@@ -73,7 +83,7 @@ void ADarkFortPlayerState::BeginPlay()
 		MaxHealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetMaxHealthAttribute()).AddUObject(this, &ADarkFortPlayerState::MaxHealthChanged);
 		StaminaChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetStaminaAttribute()).AddUObject(this, &ADarkFortPlayerState::StaminaChanged);
 		MaxStaminaChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetMaxStaminaAttribute()).AddUObject(this, &ADarkFortPlayerState::MaxStaminaChanged);
-		CharacterLevelChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetHealthAttribute()).AddUObject(this, &ADarkFortPlayerState::CharacterLevelChanged);
+		CharacterLevelChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetCharacterLevelAttribute()).AddUObject(this, &ADarkFortPlayerState::CharacterLevelChanged);
 	
 		AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Debuff.Stun")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ADarkFortPlayerState::StunTagChanged);
 	}

@@ -46,9 +46,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Player State|Attributes")
 	int32 GetCharacterLevel() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Player State|Attributes")
+	float GetArmor() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Player State|Attributes")
+	float GetStrength() const;
+
 protected:
-	UPROPERTY()
-	class UDarkFortAbilitySystemComponent* AbilitySystemComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities) class UDarkFortAbilitySystemComponent* AbilitySystemComponent;
 
 	UPROPERTY()
 	class UDarkFortAttributeSet* AttributeSetBase;
