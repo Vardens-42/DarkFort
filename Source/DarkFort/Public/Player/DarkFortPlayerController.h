@@ -18,4 +18,7 @@ class DARKFORT_API ADarkFortPlayerController : public APlayerController
 public:
 	// Sets default values for this empty's properties
 	ADarkFortPlayerController();
+
+protected:
+	virtual void OnPossess(APawn* InPawn) override;
 };

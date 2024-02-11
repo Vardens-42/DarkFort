@@ -3,8 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Characters/Abilities/DarkFortAbilitySystemComponent.h"
+#include "Characters/Abilities/DarkFortGameplayAbility.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
+#include "DarkFort.h"
 #include "DarkFortCharacter.generated.h"
 
 class USpringArmComponent;
@@ -13,12 +18,16 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, ADarkFortCharacter*, Character);
+
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ADarkFortCharacter : public ACharacter
+class ADarkFortCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
+
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) class UDarkFortCharacterMovementComponent* DarkFortCharacterMovementComponent;
 
@@ -102,5 +111,74 @@ public:
 		return DarkFortCharacterMovementComponent;
 	}
 
-};
+//GAS
+public:
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UPROPERTY(BlueprintAssignable, Category = "Dark Fort|Character")
+	FCharacterDiedDelegate OnCharacterDied;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character")
+	virtual bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character")
+	virtual int32 GetAbilityLevel(EDarkFortAbilityInputID AbilityInputID) const;
+
+	virtual void RemoveCharacterAbilities();
+
+	virtual void Die();
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character")
+	virtual void FinishDying();
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	int32 GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	float GetHealth() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	float GetStamina() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	float GetMaxStamina() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	float GetArmor() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dark Fort|Character|Attributes")
+	float GetStrength() const;
+
+protected:
+	TWeakObjectPtr<class UDarkFortAbilitySystemComponent> AbilitySystemComponent;
+	TWeakObjectPtr<class UDarkFortAttributeSet> AttributeSetBase;
+
+	FGameplayTag DeadTag;
+	FGameplayTag EffectRemoveOnDeathTag;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Dark Fort|Character")
+	FText CharacterName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Dark Fort|Animation")
+	UAnimMontage* DeathMontage;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Dark Fort|Abilities")
+	TSubclassOf<class UGameplayEffect> DefaultAttributes;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Dark Fort|Abilities")
+	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Dark Fort|Abilities")
+	TArray<TSubclassOf<class UDarkFortGameplayAbility>> CharacterAbilities;
+
+	virtual void AddCharacterAbilities();
+	virtual void InitializeAttributes();
+	virtual void AddStartupEffects();
+
+	virtual void SetHealth(float Health);
+	virtual void SetStamina(float Stamina);
+	virtual void SetArmor(float Armor);
+};

@@ -1,8 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Characters/DarkFortCharacter.h"
-
 #include "Characters/DarkFortCharacterMovementComponent.h"
+#include "Characters/Abilities/DarkFortAbilitySystemComponent.h"
+#include "Characters/Abilities/DarkFortGameplayAbility.h"
+#include "Characters/Abilities/AttributeSets/DarkFortAttributeSet.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -24,7 +26,8 @@ ADarkFortCharacter::ADarkFortCharacter(const FObjectInitializer& ObjectInitializ
 	DarkFortCharacterMovementComponent = Cast<UDarkFortCharacterMovementComponent>(GetCharacterMovement());
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -43,30 +46,11 @@ ADarkFortCharacter::ADarkFortCharacter(const FObjectInitializer& ObjectInitializ
 	GetCharacterMovement()->BrakingDecelerationWalking = 10000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-	/*
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-	CameraBoom->bEnableCameraLag = true;
-	CameraBoom->CameraLagSpeed = 4.f;
-	CameraBoom->CameraLagMaxDistance = 3.f;
+	bAlwaysRelevant = true;
 
-	/*Yucky rotation lag
-	CameraBoom->bEnableCameraRotationLag = true;
-	CameraBoom->CameraRotationLagSpeed = 4.f;
-	CameraBoom->CameraLagMaxTimeStep = 1.f;*/
+	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
+	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("State.RemoveOnDeath"));
 
-	/*
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	*/
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
 void ADarkFortCharacter::BeginPlay()
@@ -84,8 +68,7 @@ void ADarkFortCharacter::BeginPlay()
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+#pragma region Input
 
 void ADarkFortCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -120,7 +103,7 @@ void ADarkFortCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void ADarkFortCharacter::Move(const FInputActionValue& Value)
 {
-	if (Controller)
+	if (Controller && IsAlive())
 	{
 		// input is a Vector2D
 		const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -187,9 +170,12 @@ FCollisionQueryParams ADarkFortCharacter::GetIgnoreCharacterParams() const
 
 void ADarkFortCharacter::Jump()
 {
-	Super::Jump();
-	bPressedDarkFortJump = true;
-	//bPressedJump = false;
+	if (IsAlive())
+	{
+		Super::Jump();
+		bPressedDarkFortJump = true;
+		//bPressedJump = false;
+	}
 }
 
 void ADarkFortCharacter::StopJumping()
@@ -200,7 +186,10 @@ void ADarkFortCharacter::StopJumping()
 
 void ADarkFortCharacter::StartSprint()
 {
-	DarkFortCharacterMovementComponent->SprintPressed();
+	if (IsAlive())
+	{
+		DarkFortCharacterMovementComponent->SprintPressed();
+	}
 }
 
 void ADarkFortCharacter::StopSprinting()
@@ -210,5 +199,248 @@ void ADarkFortCharacter::StopSprinting()
 
 void ADarkFortCharacter::ToggleCrouch()
 {
-	DarkFortCharacterMovementComponent->CrouchPressed();
+	if (IsAlive())
+	{
+		DarkFortCharacterMovementComponent->CrouchPressed();
+	}
 }
+#pragma endregion
+
+#pragma region Gameplay Ability System
+
+UAbilitySystemComponent* ADarkFortCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent.Get();
+}
+
+bool ADarkFortCharacter::IsAlive() const
+{
+	return GetHealth() > 0.0f;
+}
+
+int32 ADarkFortCharacter::GetAbilityLevel(EDarkFortAbilityInputID AbilityInputID) const
+{
+	return 1;
+}
+
+void ADarkFortCharacter::RemoveCharacterAbilities()
+{
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->bCharacterAbilitiesGiven)
+	{
+		return;
+	}
+
+	// Remove any abilities added from a previous call. This checks to make sure the ability is in the startup 'CharacterAbilities' array.
+	TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove;
+	for (const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if ((Spec.SourceObject == this) && CharacterAbilities.Contains(Spec.Ability->GetClass()))
+		{
+			AbilitiesToRemove.Add(Spec.Handle);
+		}
+	}
+
+	// Do in two passes so the removal happens after we have the full list
+	for (int32 i = 0; i < AbilitiesToRemove.Num(); i++)
+	{
+		AbilitySystemComponent->ClearAbility(AbilitiesToRemove[i]);
+	}
+
+	AbilitySystemComponent->bCharacterAbilitiesGiven = false;
+}
+
+void ADarkFortCharacter::Die()
+{
+	// Only runs on Server
+	RemoveCharacterAbilities();
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetCharacterMovement()->GravityScale = 0;
+	//GetCharacterMovement()->Velocity = FVector(0);
+
+	OnCharacterDied.Broadcast(this);
+
+	if (AbilitySystemComponent.IsValid())
+	{
+		AbilitySystemComponent->CancelAllAbilities();
+
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(EffectRemoveOnDeathTag);
+		int32 NumEffectsRemoved = AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
+
+		AbilitySystemComponent->AddLooseGameplayTag(DeadTag);
+	}
+
+	if (DeathMontage)
+	{
+		PlayAnimMontage(DeathMontage);
+	}
+	else
+	{
+		FinishDying();
+	}
+}
+
+void ADarkFortCharacter::FinishDying()
+{
+	Destroy();
+}
+
+int32 ADarkFortCharacter::GetCharacterLevel() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return static_cast<int32>(AttributeSetBase->GetCharacterLevel());
+	}
+
+	return 0;
+}
+
+float ADarkFortCharacter::GetHealth() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetHealth();
+	}
+
+	return 0.0f;
+}
+
+float ADarkFortCharacter::GetMaxHealth() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetMaxHealth();
+	}
+
+	return 0.0f;
+}
+
+float ADarkFortCharacter::GetStamina() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetStamina();
+	}
+
+	return 0.0f;
+}
+
+float ADarkFortCharacter::GetMaxStamina() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetMaxStamina();
+	}
+
+	return 0.0f;
+}
+
+float ADarkFortCharacter::GetArmor() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetArmor();
+	}
+
+	return 0.0f;
+}
+float ADarkFortCharacter::GetStrength() const
+{
+	if (AttributeSetBase.IsValid())
+	{
+		return AttributeSetBase->GetStrength();
+	}
+
+	return 0.0f;
+}
+
+void ADarkFortCharacter::AddCharacterAbilities()
+{
+	// Grant abilities, but only on the server	
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->bCharacterAbilitiesGiven)
+	{
+		return;
+	}
+
+	for (TSubclassOf<UDarkFortGameplayAbility>& StartupAbility : CharacterAbilities)
+	{
+		AbilitySystemComponent->GiveAbility(
+			FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(StartupAbility.GetDefaultObject()->AbilityID), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+	}
+
+	AbilitySystemComponent->bCharacterAbilitiesGiven = true;
+}
+
+void ADarkFortCharacter::InitializeAttributes()
+{
+	if (!AbilitySystemComponent.IsValid())
+	{
+		return;
+	}
+
+	if (!DefaultAttributes)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s() Missing DefaultAttributes for %s. Please fill in the character's Blueprint."), *FString(__FUNCTION__), *GetName());
+		return;
+	}
+
+	// Can run on Server and Client
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, GetCharacterLevel(), EffectContext);
+	if (NewHandle.IsValid())
+	{
+		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent.Get());
+	}
+}
+
+void ADarkFortCharacter::AddStartupEffects()
+{
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->bStartupEffectsApplied)
+	{
+		return;
+	}
+
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	for (TSubclassOf<UGameplayEffect> GameplayEffect : StartupEffects)
+	{
+		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, GetCharacterLevel(), EffectContext);
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent.Get());
+		}
+	}
+
+	AbilitySystemComponent->bStartupEffectsApplied = true;
+}
+
+void ADarkFortCharacter::SetHealth(float Health)
+{
+	if (AttributeSetBase.IsValid())
+	{
+		AttributeSetBase->SetHealth(Health);
+	}
+}
+
+
+void ADarkFortCharacter::SetStamina(float Stamina)
+{
+	if (AttributeSetBase.IsValid())
+	{
+		AttributeSetBase->SetStamina(Stamina);
+	}
+}
+
+void ADarkFortCharacter::SetArmor(float Armor)
+{
+	if (AttributeSetBase.IsValid())
+	{
+		AttributeSetBase->SetArmor(Armor);
+	}
+}
+
+#pragma endregion
