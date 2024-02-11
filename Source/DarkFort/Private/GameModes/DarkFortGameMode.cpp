@@ -3,6 +3,7 @@
 #include "GameModes/DarkFortGameMode.h"
 #include "Characters/DarkFortCharacter.h"
 #include "Player/DarkFortPlayerController.h"
+#include "Player/DarkFortPlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 
 ADarkFortGameMode::ADarkFortGameMode()
@@ -15,4 +16,5 @@ ADarkFortGameMode::ADarkFortGameMode()
 	}
 
 	PlayerControllerClass = ADarkFortPlayerController::StaticClass();
+	PlayerStateClass = ADarkFortPlayerState::StaticClass();
 }
